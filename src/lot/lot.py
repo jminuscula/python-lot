@@ -9,6 +9,7 @@ from functools import wraps
 from multiprocessing import Process
 
 from listener import listen
+from publisher import publish
 
 
 def quiet(fn):
@@ -21,20 +22,27 @@ def quiet(fn):
     return no_keyboard_interrupt
 
 
+def twitter_config(config):
+    return {
+        'screen_name': config['screen_name'],
+        'pair_screen_name': config['pair_screen_name'],
+        'allowed': config['listener']['allowed'],
+        'auth': (config['auth']['app_key'], config['auth']['app_secret'],
+                 config['auth']['oauth_token'], config['auth']['oauth_token_secret']),
+    }
+
 @quiet
 def listener(config):
     logger = logging.getLogger('lot.listener')
-    screen_name = config['screen_name']
-    auth = (config['auth']['app_key'], config['auth']['app_secret'],
-            config['auth']['oauth_token'], config['auth']['oauth_token_secret'])
-    allowed = config['listener']['allowed']
-    listen(screen_name, auth, allowed)
+    conf = twitter_config(config)
+    listen(conf['screen_name'], conf['auth'], conf['allowed'])
 
 
 @quiet
 def publisher(config):
     logger = logging.getLogger('lot.publisher')
-    logger.error('No action defined for publisher')
+    conf = twitter_config(config)
+    publish(conf)
 
 
 def setup():

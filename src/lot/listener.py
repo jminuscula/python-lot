@@ -1,3 +1,8 @@
+"""
+listener provides the functionality to listen to a twitter
+stream and perform actions on the light based on the provided actions.
+"""
+
 import logging
 import twython
 
@@ -7,7 +12,7 @@ class LightOverTwitterStreamer(twython.TwythonStreamer):
     logger = logging.getLogger('lot.listener')
 
     def __init__(self, screen_name, auth, allowed, **kwargs):
-        self.logger.info('Logging with account "%s"' % screen_name)
+        self.logger.info('Logging in with account "%s"' % screen_name)
         super(LightOverTwitterStreamer, self).__init__(*auth, **kwargs)
 
         self.screen_name = screen_name
