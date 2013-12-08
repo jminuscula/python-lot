@@ -1,7 +1,7 @@
 *.py[cod]
 
 # Project related files
-src/settings.json
+*settings.json
 
 # C extensions
 *.so

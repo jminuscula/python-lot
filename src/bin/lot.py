@@ -8,8 +8,8 @@ import json
 from functools import wraps
 from multiprocessing import Process
 
-from listener import listen
-from publisher import publish
+from lot.listener import listen
+from lot.publisher import publish
 
 
 def quiet(fn):
@@ -51,11 +51,12 @@ def setup():
 
     paths = ('settings.json',
              '../settings.json',
+             '../config/settings.json',
              '~/.lot.json',
              '~/.config/lot.json',
              '~/.lot/settings.json')
 
-    for path in paths:
+    for path in map(os.path.realpath, paths):
         if os.path.isfile(path):
             with open(path, 'r') as settings:
                 return json.load(settings)
