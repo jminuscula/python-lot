@@ -4,6 +4,19 @@
 from subprocess import call
 
 
+def os_quiet(fn):
+    def silent_on_os_error(*args, **kwargs):
+        try:
+            return fn(*args, **kwargs)
+        except OSError:
+            import logging
+            import traceback
+            logger = logging.getLogger('lot.light')
+            logger.critical(traceback.format_exc())
+            return False
+    return silent_on_os_error
+
+
 class LedborgController:
 
     # Ledborg device path
@@ -49,6 +62,7 @@ class LedborgController:
         'grey': '111',
     }
 
+    @os_quiet
     def is_on(self):
         with open(self.LED, 'r') as led:
             state = led.read()
@@ -58,12 +72,14 @@ class LedborgController:
         code = self.COLORS.get(color)
         if code:
             self.ON = code
-        return True
+            return True
+        return False
 
+    @os_quiet
     def _write_state(self, state):
         with open(self.LED, 'w') as led:
             led.write(state)
-        return True
+            return True
 
     def turn_on(self):
         return self._write_state(self.ON)
@@ -89,6 +105,7 @@ class PowerSocketController:
     def change_color(self, color):
         return False
 
+    @os_quiet
     def _write_state(self, state):
         return call((self.RCSWITCH_PATH, self.SYSTEM_ID, self.PLUG_ID, state))
 

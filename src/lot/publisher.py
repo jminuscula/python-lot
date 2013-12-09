@@ -34,9 +34,11 @@ class LightOverTwitterAnnouncer:
         self.update_status(status=text)
 
     def publish_on(self):
+        self.logger.info('Announcing ON state')
         return self._publish_status("on")
 
     def publish_off(self):
+        self.logger.info('Announcing OFF state')
         return self._publish_status("off")
 
 
@@ -66,20 +68,23 @@ class LightOverTwitterSwitch:
         GPIO.setup(self.switch_channel, GPIO.IN, initial=GPIO.LOW)
 
     def pressed(self):
+        self.logger.debug('Button pressed!')
         action = self.turn_off if self.on else self.turn_on
         self.on = action()
 
     def turn_on(self):
+        self.logger.info('Turning on')
         on = self.light.turn_on()
         if on:
             return self.announcer.publish_on()
         return on
 
     def turn_off(self):
+        self.logger.info('Turning off')
         off = self.light.turn_off()
         if off:
             return self.announcer.publish_off()
-        return off
+        return not off
 
 
 def publish(twitter_conf):
