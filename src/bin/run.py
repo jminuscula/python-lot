@@ -18,6 +18,8 @@ def quiet(fn):
         try:
             return fn(*args, **kwargs)
         except KeyboardInterrupt:
+            import RPi.GPIO as GPIO
+            GPIO.cleanup()
             sys.exit(-1)
     return no_keyboard_interrupt
 
@@ -50,6 +52,7 @@ def setup():
     logging.basicConfig(format=fmt, level=logging.INFO)
 
     paths = ('settings.json',
+             'config/settings.json',
              '../settings.json',
              '../config/settings.json',
              '~/.lot.json',

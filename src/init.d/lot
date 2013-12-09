@@ -1,0 +1,42 @@
+#!/bin/bash
+
+#
+# Light Over Twitter
+#
+
+LOCK=/var/run/LOT
+
+ENV=/opt/lot
+ROOT=$ENV/python-lot/src
+
+# Start the service
+start() {
+        initlog -c "echo -n Starting LightOverTwitter"
+        touch $LOCK
+
+        source $ENV/bin/activate
+        pushd $ROOT
+        python3 $ROOT/bin/lot.py
+        echo
+}
+
+# Stop the service
+stop() {
+        # initlog -c "echo -n Stopping LightOverTwitter"
+        # rm -f $LOCK
+        echo
+}
+
+
+case "$1" in
+  start)
+        start
+        ;;
+  stop)
+        stop
+        ;;
+  *)
+        echo $"Usage: $0 {start|stop}"
+        exit 1
+esac
+exit 0

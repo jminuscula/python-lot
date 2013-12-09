@@ -10,9 +10,9 @@ http://www.raspberrypi.org/downloads
 
 Copy the files into the SD card
 Connect power supply
-Follow instructions to install OS
+Follow instructions to install Raspbian OS
 
-sudo raspi-config
+sudo raspi-config to reconfigure
 
 ## Download Wifi drivers
 
@@ -25,10 +25,14 @@ sudo apt-get install wicd
 
 ## Install project dependencies
 
-sudo apt-get install python3 git
+sudo apt-get install python3 python3-dev libncurses5-dev git
+curl "python-distribute.org/distribute_setup.py" | sudo python3
+sudo easy_install-3.2 pip readline
+sudo pip install virtualenv ipython ipdb
 
 ## Deploy project
 
+cd /opt
 pyvenv lot && cd lot
 source lot/bin/activate
 curl "python-distribute.org/distribute_setup.py" | python

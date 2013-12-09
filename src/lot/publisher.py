@@ -12,7 +12,7 @@ try:
 except ImportError:
     from unittest.mock import Mock
     GPIO = Mock()
-import light
+import lot.light
 
 
 class LightOverTwitterAnnouncer:
@@ -59,7 +59,10 @@ class LightOverTwitterSwitch:
 
         # bind the channel interrupt to the event
         self.logger.info('Listening to switch interruptions')
-        GPIO.add_event_detect(self.switch_channel, GPIO.RISING, self.pressed)
+        GPIO.add_event_detect(self.switch_channel, GPIO.RISING, self.pressed, bouncetime=300)
+
+        # block the execution for a pin that never rises
+        GPIO.wait_for_edge(self.blocker_channel, GPIO.RISING)
 
     def setup_gpio(self):
         # set the GPIO to use Board channel numbering
@@ -90,5 +93,3 @@ class LightOverTwitterSwitch:
 def publish(twitter_conf):
     announcer = LightOverTwitterAnnouncer(twitter_conf)
     switch = LightOverTwitterSwitch(announcer)
-    while True:
-        time.sleep(0.01)

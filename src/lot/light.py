@@ -25,6 +25,9 @@ class LedborgController:
     # default ON/OFF colors (white and off)
     ON, OFF = '222', '000'
 
+    # a pin that never rises to block execution
+    BLOCKER_CHANNEL = 24
+
     # possible colors in order of brightness per color
     COLORS = {
         'white': '222',
@@ -94,7 +97,11 @@ class PowerSocketController:
     SYSTEM_ID = 11111
     ON, OFF = 1, 0
 
-    RCSWITCH_PATH = '/usr/local/bin/rcswitch'
+    # rcswitch executable (must be in $PATH)
+    RCSWITCH = 'rcswitch'
+
+    # a pin that never rises to block execution
+    BLOCKER_CHANNEL = 24
 
     def __init__(self):
         self.turn_off()
@@ -107,7 +114,7 @@ class PowerSocketController:
 
     @os_quiet
     def _write_state(self, state):
-        return call((self.RCSWITCH_PATH, self.SYSTEM_ID, self.PLUG_ID, state))
+        return call((self.RCSWITCH, self.SYSTEM_ID, self.PLUG_ID, state))
 
     def turn_on(self):
         return self._write_state(self.ON)
