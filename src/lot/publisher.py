@@ -48,7 +48,7 @@ class LightOverTwitterSwitch:
         self.logger = logging.getLogger('lot.publisher')
 
         self.on = False
-        self.switch_channel = 0
+        self.switch_channel = 17
         self.setup_gpio()
 
         # twitter interface instance
@@ -61,8 +61,9 @@ class LightOverTwitterSwitch:
         self.logger.info('Listening to switch interruptions')
         GPIO.add_event_detect(self.switch_channel, GPIO.RISING, self.pressed, bouncetime=300)
 
-        # block the execution for a pin that never rises
-        GPIO.wait_for_edge(self.blocker_channel, GPIO.RISING)
+        # always wait for the switch to be activated
+        while GPIO.wait_for_edge(self.blocker_channel, GPIO.RISING):
+            pass
 
     def setup_gpio(self):
         # set the GPIO to use Board channel numbering

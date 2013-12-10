@@ -17,7 +17,7 @@ class LightOverTwitterStreamer(twython.TwythonStreamer):
 
         self.screen_name = screen_name
         self.allowed_screen_names = allowed
-        self.logger.info('Listening to stream…')
+        self.logger.info('Listening to stream...')
 
     def _is_allowed(self, data):
         """

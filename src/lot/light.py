@@ -100,9 +100,6 @@ class PowerSocketController:
     # rcswitch executable (must be in $PATH)
     RCSWITCH = 'rcswitch'
 
-    # a pin that never rises to block execution
-    BLOCKER_CHANNEL = 24
-
     def __init__(self):
         self.turn_off()
 
