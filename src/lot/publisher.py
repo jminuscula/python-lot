@@ -12,7 +12,7 @@ try:
 except ImportError:
     from unittest.mock import Mock
     GPIO = Mock()
-import lot.light
+import lot.light as light
 
 
 class LightOverTwitterAnnouncer:
@@ -29,17 +29,20 @@ class LightOverTwitterAnnouncer:
 
     def _publish_status(self, tags):
         text = ' '.join('#%s' % t for t in tags)
-        msg = "@{} {}".format((self.pair_screen_name, text))
+        msg = "@{0} {1}".format(self.pair_screen_name, text)
         self.logger.info('Publishing "%s"' % msg)
-        self.update_status(status=text)
+        try:
+            return self.twitter.update_status(status=msg)
+        except twython.exceptions.TwythonError:
+            return False
 
     def publish_on(self):
         self.logger.info('Announcing ON state')
-        return self._publish_status("on")
+        return self._publish_status(["on"])
 
     def publish_off(self):
         self.logger.info('Announcing OFF state')
-        return self._publish_status("off")
+        return self._publish_status(["off"])
 
 
 class LightOverTwitterSwitch:
@@ -72,7 +75,7 @@ class LightOverTwitterSwitch:
         # set the switch channel as an input pin
         GPIO.setup(self.switch_channel, GPIO.IN, initial=GPIO.HIGH)
 
-    def pressed(self):
+    def pressed(self, channel):
         self.logger.debug('Button pressed!')
         action = self.turn_off if self.on else self.turn_on
         self.on = action()
