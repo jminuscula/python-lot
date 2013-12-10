@@ -29,7 +29,8 @@ class LightOverTwitterAnnouncer:
 
     def _publish_status(self, tags):
         text = ' '.join('#%s' % t for t in tags)
-        msg = "@{0} {1}".format(self.pair_screen_name, text)
+        ts = str(time.time())
+        msg = "@{0} {1} {2}".format(self.pair_screen_name, text, ts)
         self.logger.info('Publishing "%s"' % msg)
         try:
             return self.twitter.update_status(status=msg)
