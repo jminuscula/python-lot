@@ -1,5 +1,6 @@
 {
-    "screen_name": "",
+    "screen_name": "lamp_screen_name",
+    "pair_screen_name": "other_lamp_screen_name",
 
     "auth": {
         "app_key": "",
@@ -9,11 +10,16 @@
     },
 
     "listener": {
-        "allowed": []
+        "allowed": ["lamp_screen_name", "other_lamp_screen_name", "person1", "person2"]
     },
 
     "publisher": {
         
-    }
+    },
 
+    "light": {
+        "switch_channel": 3,
+        "bouncetime": 500,
+        "wait": 1000
+    }
 }

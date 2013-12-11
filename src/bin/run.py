@@ -43,8 +43,9 @@ def listener(config):
 @quiet
 def publisher(config):
     logger = logging.getLogger('lot.publisher')
-    conf = twitter_config(config)
-    publish(conf)
+    tw_conf = twitter_config(config)
+    light_conf = config.get('light', {})
+    publish(tw_conf, light_conf)
 
 
 def setup():

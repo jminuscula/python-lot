@@ -48,11 +48,13 @@ class LightOverTwitterAnnouncer:
 
 class LightOverTwitterSwitch:
 
-    def __init__(self, announcer):
+    def __init__(self, conf, announcer):
         self.logger = logging.getLogger('lot.publisher')
 
         self.on = False
-        self.switch_channel = 3
+        self.switch_channel = conf.get('switch_channel', 3)
+        self.bouncetime = conf.get('bouncetime', 300)
+        self.wait = conf.get('wait', 1000)
         self.setup_gpio()
 
         # twitter interface instance
@@ -63,11 +65,12 @@ class LightOverTwitterSwitch:
 
         # bind the channel interrupt to the event
         self.logger.info('Listening to switch interruptions')
-        GPIO.add_event_detect(self.switch_channel, GPIO.FALLING, self.pressed, bouncetime=500)
+        GPIO.add_event_detect(self.switch_channel, GPIO.FALLING,
+                              self.pressed, bouncetime=self.bouncetime)
 
-        # always wait for the switch to be activated
+        # check for events only at wait intervals
         while True:
-            time.sleep(0.5)
+            time.sleep(self.wait)
 
     def setup_gpio(self):
         GPIO.cleanup()
@@ -86,16 +89,16 @@ class LightOverTwitterSwitch:
         on = self.light.turn_on()
         if on:
             return self.announcer.publish_on()
-        return on
+        return self.on
 
     def turn_off(self):
         self.logger.info('Turning off')
         off = self.light.turn_off()
         if off:
-            return self.announcer.publish_off()
-        return not off
+            return not self.announcer.publish_off()
+        return self.on
 
 
-def publish(twitter_conf):
+def publish(twitter_conf, light_conf):
     announcer = LightOverTwitterAnnouncer(twitter_conf)
-    switch = LightOverTwitterSwitch(announcer)
+    switch = LightOverTwitterSwitch(light_conf, announcer)
