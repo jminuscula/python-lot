@@ -3,6 +3,7 @@
 import sys
 import os.path
 import logging
+import signal
 
 import json
 from functools import wraps
@@ -18,10 +19,20 @@ def quiet(fn):
         try:
             return fn(*args, **kwargs)
         except KeyboardInterrupt:
-            import RPi.GPIO as GPIO
-            GPIO.cleanup()
-            sys.exit(-1)
+            return quit()
     return no_keyboard_interrupt
+
+
+def quit():
+    try:
+        import RPi.GPIO as GPIO
+        GPIO.cleanup()
+    except:
+        pass
+
+    logger = logging.getLogger('lot')
+    logger.info('Shutting down...')
+    sys.exit(0)
 
 
 def twitter_config(config):
@@ -49,6 +60,8 @@ def publisher(config):
 
 
 def setup():
+    signal.signal(signal.SIGTERM, quit)
+
     fmt = "%(asctime)s [%(levelname)s] %(name)s: %(message)s"
     logging.basicConfig(format=fmt, level=logging.INFO)
 
