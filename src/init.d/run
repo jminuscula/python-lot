@@ -1,0 +1,11 @@
+#!/bin/bash
+
+VENV=/opt/lot
+DIR=$VENV/python-lot/src
+LOG=/var/log/lot.log
+
+source $VENV/bin/activate
+export PYTHONPATH=$DIR:$PYTHONPATH
+
+pushd $DIR
+python bin/run.py 1> $LOG 2> $LOG
