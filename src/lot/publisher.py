@@ -69,7 +69,7 @@ class LightOverTwitterSwitch:
         self.announcer = announcer
 
         # physical light controller
-        self.light = light.LedborgController()
+        self.light = light.LightController()
 
         # sync initial status
         self.turn_off()

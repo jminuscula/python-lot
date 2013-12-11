@@ -25,9 +25,6 @@ class LedborgController:
     # default ON/OFF colors (white and off)
     ON, OFF = '222', '000'
 
-    # a pin that never rises to block execution
-    BLOCKER_CHANNEL = 24
-
     # possible colors in order of brightness per color
     COLORS = {
         'white': '222',
@@ -65,6 +62,9 @@ class LedborgController:
         'grey': '111',
     }
 
+    def __init__(self):
+        self.on = None
+
     @os_quiet
     def is_on(self):
         with open(self.LED, 'r') as led:
@@ -101,7 +101,7 @@ class PowerSocketController:
     RCSWITCH = 'rcswitch'
 
     def __init__(self):
-        self.turn_off()
+        self.on = None
 
     def is_on(self):
         return None
@@ -118,3 +118,6 @@ class PowerSocketController:
 
     def turn_off(self):
         return self._write_state(self.OFF)
+
+
+LightController = LedborgController

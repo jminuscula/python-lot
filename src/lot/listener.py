@@ -5,6 +5,9 @@ stream and perform actions on the light based on the provided actions.
 
 import logging
 import twython
+import itertools
+
+from lot import light
 
 
 class LightOverTwitterStreamer(twython.TwythonStreamer):
@@ -37,7 +40,7 @@ class LightOverTwitterStreamer(twython.TwythonStreamer):
         """
         if 'hashtags' in data.get('entities', {}):
             hashtags = (ht['text'] for ht in data['entities']['hashtags'])
-            return [ht for ht in hashtags if ht in LightOverTwitterAction.tags]
+            return {ht for ht in hashtags if ht in LightOverTwitterAction.tags}
 
     def on_success(self, data):
         """
@@ -56,31 +59,43 @@ class LightOverTwitterStreamer(twython.TwythonStreamer):
         if tags:
             self.logger.info("Processing message: %s" % text)
             return LightOverTwitterAction(tags)
-        self.logger.warning("Received message without action: %s" % text)
+        self.logger.warning("Received message without keywords: %s" % text)
 
 
 class LightOverTwitterAction:
 
-    actions = ['on', 'off']
-    tags = actions
+    actions = {'on', 'off', 'blink'}
+    modifiers = {'force'}
+    colors = getattr(light.LightController, 'COLORS', {})
+    tags = set(itertools.chain(actions, modifiers, colors.keys()))
 
     def __init__(self, tags):
         self.logger = logging.getLogger('lot.listener')
 
-        if len(tags) != 1:
-            self.logger.error("Ambiguous action. Aborted.")
-            return
+        action = None
+        modifiers = set()
+        color = None
 
-        return getattr(self, tags[0])()
+        for tag in tags:
+            if tag in self.actions:
+                action = getattr(self, tag, None)
+            elif tag in self.modifiers:
+                modifiers.add(tag)
+            elif tag in self.colors:
+                color = tag
 
-    def on(self):
+        if action:
+            return action(modifiers, color)
+        self.logger.error('Message had no actions')
+
+    def on(self, modifiers=None, color=None):
         self.logger.info("ON")
 
-    def off(self):
+    def off(self, modifiers=None, color=None):
         self.logger.info("OFF")
 
-    def color(self):
-        pass
+    def blink(self, modifiers=None, color=None):
+        self.logger.info("BLINK")
 
 
 def listen(user, auth, allowed):
