@@ -1,4 +1,12 @@
 #!/bin/sh
+### BEGIN INIT INFO
+# Provides:          lot
+# Required-Start:    $all
+# Required-Stop:     $all
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: start light syncrhonization over twitter
+### END INIT INFO
 
 # Change the next 3 lines to suit where you install your script and what you want to call it
 ENV=/opt/lot

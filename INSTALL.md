@@ -44,6 +44,7 @@ git clone https://github.com/jminuscula/python-lot
 ## Configure project
 
 copy init script
-sudo cp python-lot/src/bin/lot /etc/init.d
-sudo chmod 755 /etc/init.d/lot
-sudo update-rc.d lot
+sudo chmod 755 /opt/lot/python-lot/src/init.d/lot
+sudo chmod 755 /opt/lot/python-lot/src/init.d/run
+sudo cp /opt/lot/python-lot/src/init.d/lot /etc/init.d/
+sudo update-rc.d lot start
