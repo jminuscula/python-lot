@@ -26,26 +26,32 @@ class LightOverTwitterAnnouncer:
 
         self.logger.info('Connecting publisher to twitter account "%s"' % self.screen_name)
         self.twitter = twython.Twython(*config['auth'])
-        self.twitter.update_status(status="I'm alive!")
 
-    def _publish_status(self, tags):
-        text = ' '.join('#%s' % t for t in tags)
+        # sync initial status
+        self.publish("I'm alive!")
+
+    def publish(self, text):
         ts = int(time.time())
-        msg = "@{0} {1} {2}".format(self.pair_screen_name, text, ts)
-        self.logger.info('Publishing "%s"' % msg)
+        text = "{0} {1}".format(text, ts)
         try:
-            return self.twitter.update_status(status=msg)
+            self.logger.debug('Publishing "%s"' % text)
+            return self.twitter.update_status(status=text)
         except twython.exceptions.TwythonError:
             self.logger.error(traceback.format_exc())
             return False
 
+    def publish_state(self, tags):
+        text = ' '.join('#%s' % t for t in tags)
+        text = "@{0} {1}".format(self.pair_screen_name, text)
+        return self.publish(text)
+
     def publish_on(self):
         self.logger.info('Announcing ON state')
-        return self._publish_status(["on"])
+        return self.publish_state(["on"])
 
     def publish_off(self):
         self.logger.info('Announcing OFF state')
-        return self._publish_status(["off"])
+        return self.publish_state(["off"])
 
 
 class LightOverTwitterSwitch:
@@ -64,6 +70,9 @@ class LightOverTwitterSwitch:
 
         # physical light controller
         self.light = light.LedborgController()
+
+        # sync initial status
+        self.turn_off()
 
         # bind the channel interrupt to the event
         self.logger.info('Listening to switch interruptions')
