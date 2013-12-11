@@ -49,7 +49,7 @@ class LightOverTwitterStreamer(twython.TwythonStreamer):
             return
 
         if not self._is_allowed(data):
-            self.logger.error("Received non qualifying message: %s" % text)
+            self.logger.warning("Received non qualifying message: %s" % text)
             return
 
         tags = self.get_tags(data)

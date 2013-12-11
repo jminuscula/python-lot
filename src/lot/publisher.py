@@ -6,13 +6,14 @@ detect push button events, sending synchronization messages over Twitter.
 import time
 import logging
 import twython
+import traceback
 
 try:
     import RPi.GPIO as GPIO
 except ImportError:
     from unittest.mock import Mock
     GPIO = Mock()
-import lot.light as light
+from lot import light
 
 
 class LightOverTwitterAnnouncer:
@@ -29,12 +30,13 @@ class LightOverTwitterAnnouncer:
 
     def _publish_status(self, tags):
         text = ' '.join('#%s' % t for t in tags)
-        ts = str(time.time())
+        ts = int(time.time())
         msg = "@{0} {1} {2}".format(self.pair_screen_name, text, ts)
         self.logger.info('Publishing "%s"' % msg)
         try:
             return self.twitter.update_status(status=msg)
         except twython.exceptions.TwythonError:
+            self.logger.error(traceback.format_exc())
             return False
 
     def publish_on(self):
