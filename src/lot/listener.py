@@ -6,6 +6,7 @@ stream and perform actions on the light based on the provided actions.
 import logging
 import twython
 import itertools
+import time
 
 from lot import light
 
@@ -64,10 +65,12 @@ class LightOverTwitterStreamer(twython.TwythonStreamer):
 
 class LightOverTwitterAction:
 
-    actions = {'on', 'off', 'blink'}
-    modifiers = {'force'}
+    actions = {'on', 'off', 'blink', 'reboot'}
+    modifiers = {'force', 'long'}
     colors = getattr(light.LightController, 'COLORS', {})
     tags = set(itertools.chain(actions, modifiers, colors.keys()))
+
+    light = light.LightController()
 
     def __init__(self, tags):
         self.logger = logging.getLogger('lot.listener')
@@ -90,12 +93,28 @@ class LightOverTwitterAction:
 
     def on(self, modifiers=None, color=None):
         self.logger.info("ON")
+        self.light.turn_on()
 
-    def off(self, modifiers=None, color=None):
+    def off(self, *args, **kwargs):
         self.logger.info("OFF")
+        self.light.turn_off()
 
-    def blink(self, modifiers=None, color=None):
+    def blink(self, modifiers=None, **kwargs):
         self.logger.info("BLINK")
+        repeat, on_ms, off_ms = 10, 0.5, 0.5
+        if 'long' in modifiers:
+            repeat, on_ms, off_ms = 5, 1, 0.6
+        for i in range(repeat):
+            self.light.turn_on()
+            time.sleep(on_ms)
+            self.light.turn_off()
+            time.sleep(off_ms)
+
+    def reboot(self, *args, **kwargs):
+        self.light.turn_off()
+        self.logger.info('Rebooting system')
+        import os
+        os.system('reboot')
 
 
 def listen(user, auth, allowed):

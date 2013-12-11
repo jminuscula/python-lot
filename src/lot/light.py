@@ -28,6 +28,7 @@ class LedborgController:
     # possible colors in order of brightness per color
     COLORS = {
         'white': '222',
+        'grey': '111',
 
         'blue': '002',
         'cyan': '022',
@@ -57,9 +58,6 @@ class LedborgController:
         'orange': '210',
         'lightyellow': '221',
         'darkyellow': '110',
-
-        'black': '000',
-        'grey': '111',
     }
 
     def __init__(self):
@@ -75,7 +73,7 @@ class LedborgController:
         code = self.COLORS.get(color)
         if code:
             self.ON = code
-            return True
+            return self.turn_on()
         return False
 
     @os_quiet
