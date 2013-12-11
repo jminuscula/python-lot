@@ -19,7 +19,7 @@
 
     "light": {
         "switch_channel": 3,
-        "bouncetime": 500,
+        "bouncetime": 2000,
         "wait": 1000
     }
 }

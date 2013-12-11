@@ -23,6 +23,9 @@ class LightOverTwitterStreamer(twython.TwythonStreamer):
         self.allowed_screen_names = allowed
         self.logger.info('Listening to stream...')
 
+    def _own_tweet(self, data):
+        return data.get('user', {}).get('screen_name') == self.screen_name
+
     def _is_allowed(self, data):
         """
         Filters tweets not coming from allowed senders or not directed to user
@@ -50,6 +53,9 @@ class LightOverTwitterStreamer(twython.TwythonStreamer):
         text = data.get('text')
         if text is None:
             self.logger.debug("Received non text message")
+            return
+
+        if self._own_tweet(data):
             return
 
         if not self._is_allowed(data):
