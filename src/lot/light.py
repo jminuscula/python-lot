@@ -88,6 +88,11 @@ class LedborgController:
     def turn_off(self):
         return self._write_state(self.OFF)
 
+    def switch(self):
+        if self.on:
+            return self.turn_off()
+        return self.turn_on()
+
 
 class PowerSocketController:
 
