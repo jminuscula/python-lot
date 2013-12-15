@@ -94,16 +94,18 @@ class LightOverTwitterAction:
                 color = tag
 
         if action:
-            return action(modifiers, color)
+            return action(modifiers=modifiers, color=color)
         self.logger.error('Message had no actions')
 
     def on(self, modifiers=None, color=None):
         self.logger.info("ON")
-        self.light.turn_on()
+        if color is not None:
+            return self.light.change_color(color)
+        return self.light.turn_on()
 
     def off(self, *args, **kwargs):
         self.logger.info("OFF")
-        self.light.turn_off()
+        return self.light.turn_off()
 
     def blink(self, modifiers=None, **kwargs):
         self.logger.info("BLINK")
