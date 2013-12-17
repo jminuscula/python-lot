@@ -111,7 +111,7 @@ class LightOverTwitterAction:
 
     def blink(self, *args, **kwargs):
         self.logger.info("BLINK")
-        repeat, on_ms, off_ms = 10, 0.5, 0.5
+        repeat, on_ms, off_ms = 5, 1, 0.6
         for i in range(repeat):
             self.light.switch()
             time.sleep(on_ms)
